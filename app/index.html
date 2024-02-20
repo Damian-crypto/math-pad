@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPad</title>
+
+    <link rel="stylesheet" href="../src/MQ/mathquill.css"/>
+    <link rel="stylesheet" href="../src/MD/toastui-editor.min.css" />
+    <link rel="stylesheet" href="main.css">
+    <script src="../src/MQ/jquery.min.js"></script>
+</head>
+<body>
+    <div id="control-panel">
+        <button onclick="addMathField()">Add Math</button>
+        <button onclick="addTextField()">Add Text</button>
+        <button onclick="addMDField()">Add MD</button>
+        <!-- <button onclick="removeActiveMathField()">Delete</button> -->
+        <p>Font size:</p><input type="number" id="font-size" value="24" onchange="changeFont()">
+        <p>Apply to all:</p><input type="checkbox" name="applyToAll" id="apply-to-all">
+        <p>Show LaTeX:</p><input type="checkbox" name="latexView" id="show-latex">
+    </div>
+    <div id="main-board">
+    </div>
+    
+    <span id="latex"></span>
+    
+    <script src="../src/draggable/drag-arrange.min.js"></script>
+    <!-- https://docs.mathquill.com/en/latest/ -->
+    <script src="../src/MQ/mathquill.min.js"></script>
+    <!-- https://github.com/nhn/toast-ui.doc -->
+    <script src="../src/MD/toastui-editor-all.min.js"></script>
+    <script src="main.js"></script>
+    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script> -->
+</body>
+</html>
