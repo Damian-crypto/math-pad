@@ -95,3 +95,11 @@ p {
 .toastui-editor-toolbar {
     display: none;
 }
+
+.paint-app-container {
+    display: none;
+}
+
+.paint-app-container #paint-size-w, #paint-size-h {
+    width: 500px;
+}

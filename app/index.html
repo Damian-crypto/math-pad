@@ -1,36 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPad</title>
 
-    <link rel="stylesheet" href="../src/MQ/mathquill.css"/>
+    <script language="JavaScript">
+        window.onbeforeunload = confirmExit;
+        function confirmExit() {
+            return "Are you sure you want to exit?";
+        }
+    </script>
+
+    <link rel="stylesheet" href="../src/MQ/mathquill.css" />
     <link rel="stylesheet" href="../src/MD/toastui-editor.min.css" />
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="../src/paint-app/paint-style.css">
     <script src="../src/MQ/jquery.min.js"></script>
 </head>
+
 <body>
     <div id="control-panel">
         <button onclick="addMathField()">Add Math</button>
         <button onclick="addTextField()">Add Text</button>
         <button onclick="addMDField()">Add MD</button>
+        <button onclick="showPaintField()">Show Paint</button>
         <!-- <button onclick="removeActiveMathField()">Delete</button> -->
         <p>Font size:</p><input type="number" id="font-size" value="24" onchange="changeFont()">
         <p>Apply to all:</p><input type="checkbox" name="applyToAll" id="apply-to-all">
         <p>Show LaTeX:</p><input type="checkbox" name="latexView" id="show-latex">
+        <p>Elapsed: <p id="elapsed-time">0:0:0</p></p>
     </div>
     <div id="main-board">
+        <div id="paint-app-container-id" class="paint-app-container draggable-element">
+            <div class="paint-app">
+                <canvas width="1000" height="350" id="mainCanvas"></canvas>
+                <div class="controls">
+                    <ul>
+                        <li class="red selected"></li>
+                        <li class="blue"></li>
+                        <li class="yellow"></li>
+                    </ul>
+                    <button id="clear" onclick='clear_canvas_width()'>Clear Canvas</button>
+                    <button id="revealColorSelect">New Colour</button>
+                    <div id="colorSelect">
+                        <span id="newColor"></span>
+                        <div class="sliders">
+                            <p>
+                                <label for="red">Red</label>
+                                <input id="red" name="red" type="range" min=0 max=255 value=0>
+                            </p>
+                            <p>
+                                <label for="green">Green</label>
+                                <input id="green" name="green" type="range" min=0 max=255 value=0>
+                            </p>
+                            <p>
+                                <label for="blue">Blue</label>
+                                <input id="blue" name="blue" type="range" min=0 max=255 value=0>
+                            </p>
+                        </div>
+                        <div>
+                            <button id="addNewColor">Add Colour</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="drag-area"></div>
+        </div>
     </div>
-    
+
     <span id="latex"></span>
-    
+
     <script src="../src/draggable/drag-arrange.min.js"></script>
     <!-- https://docs.mathquill.com/en/latest/ -->
     <script src="../src/MQ/mathquill.min.js"></script>
     <!-- https://github.com/nhn/toast-ui.doc -->
     <script src="../src/MD/toastui-editor-all.min.js"></script>
+    <script src="../src/paint-app/paint-app.js"></script>
     <script src="main.js"></script>
     <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script> -->
 </body>
+
 </html>

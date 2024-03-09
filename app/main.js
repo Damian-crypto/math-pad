@@ -19,6 +19,8 @@ function activateMathField(x) {
 
     var mathField = MQ.MathField(mathFieldSpan, {
         spaceBehavesLikeTab: true, // configurable
+        // autoCommands: 'pi theta sqrt sum',
+        autoOperatorNames: 'sin cos',
         substituteTextarea: function() {
             return document.createElement('textarea');
         },
@@ -221,6 +223,20 @@ function removeActiveMDField(id = -1) {
     container.remove();
 }
 
+var paintOn = false;
+function showPaintField() {
+    var paintContainer = document.getElementById("paint-app-container-id");
+    if (paintOn) {
+        paintContainer.style.display = "none";
+        paintOn = false;
+    } else {
+        paintContainer.style.display = "flex";
+        paintOn = true;
+    }
+    
+    $(".draggable-element").arrangeable({dragSelector: '.drag-area'});
+}
+
 function fieldAdded(container) {
     var draggable = document.createElement("div");
     draggable.classList.add("drag-area");
@@ -269,6 +285,21 @@ function initialize() {
         mouseX = evt.clientX;
         mouseY = evt.clientY;
     });
+
+    var hour = 0, minute = 0, second = 0;
+    var elapsedTime = document.getElementById("elapsed-time");
+    setInterval(() => {
+        elapsedTime.innerText = `${hour}:${minute}:${second}`;
+        second++;
+        if (second === 60) {
+            minute++;
+            second = 0;
+        }
+        if (minute === 60) {
+            hour++;
+            minute = 0;
+        }
+    }, 1000);
 }
 
 initialize();
