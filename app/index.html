@@ -13,11 +13,16 @@
         }
     </script>
 
+    <script type="text/javascript" charset="UTF-8"
+        src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
+
     <link rel="stylesheet" href="../src/MQ/mathquill.css" />
     <link rel="stylesheet" href="../src/MD/toastui-editor.min.css" />
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="../src/paint-app/paint-style.css">
     <script src="../src/MQ/jquery.min.js"></script>
+    <script src="../src/dtable/dtable.js"></script>
 </head>
 
 <body>
@@ -25,14 +30,19 @@
         <button onclick="addMathField()">Add Math</button>
         <button onclick="addTextField()">Add Text</button>
         <button onclick="addMDField()">Add MD</button>
+        <button onclick="addTableField()">Add Table</button>
+        <button onclick="addGraphField()">Add Graph</button>
         <button onclick="showPaintField()">Show Paint</button>
         <!-- <button onclick="removeActiveMathField()">Delete</button> -->
         <p>Font size:</p><input type="number" id="font-size" value="24" onchange="changeFont()">
         <p>Apply to all:</p><input type="checkbox" name="applyToAll" id="apply-to-all">
         <p>Show LaTeX:</p><input type="checkbox" name="latexView" id="show-latex">
-        <p>Elapsed: <p id="elapsed-time">0:0:0</p></p>
+        <p>Elapsed:
+        <p id="elapsed-time">0:0:0</p>
+        </p>
     </div>
     <div id="main-board">
+        <!-- PAINTING APP -->
         <div id="paint-app-container-id" class="paint-app-container draggable-element">
             <div class="paint-app">
                 <canvas width="1000" height="350" id="mainCanvas"></canvas>

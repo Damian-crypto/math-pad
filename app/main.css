@@ -15,6 +15,7 @@ p {
     top: 0;
     padding-bottom: 10px;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin: 10px;
 }
@@ -33,6 +34,10 @@ p {
     margin-left: 20px;
 }
 
+#elapsed-time {
+    cursor: default;
+}
+
 .math-field {
     font-size: 32px;
     background-color: white;
@@ -46,6 +51,33 @@ p {
     font-size: 32px;
     background-color: white;
     border: none;
+}
+
+.graph-field {
+    width: 500px;
+    height: 500px;
+}
+
+.tbl_input {
+    width: 2ch;
+    text-align: center;
+    background-color: rgb(207, 207, 207);
+    border: none;
+    border-radius: 0.5em;
+    font-size: 20px;
+}
+
+.d_table {
+    text-align: center;
+}
+
+.table-button-container {
+    display: flex;
+}
+
+.table-table-button-container {
+    display: flex;
+    flex-direction: column;
 }
 
 .ProseMirror {

@@ -19,9 +19,9 @@ function activateMathField(x) {
 
     var mathField = MQ.MathField(mathFieldSpan, {
         spaceBehavesLikeTab: true, // configurable
-        // autoCommands: 'pi theta sqrt sum',
-        autoOperatorNames: 'sin cos',
-        substituteTextarea: function() {
+        autoCommands: 'pi theta sqrt sum',
+        autoOperatorNames: 'sin cos tan cosec sec cot csc',
+        substituteTextarea: function () {
             return document.createElement('textarea');
         },
         handlers: {
@@ -35,7 +35,7 @@ function activateMathField(x) {
     });
 
     mathField.focus();
-    mathField.el().addEventListener('click', function(evt) {
+    mathField.el().addEventListener('click', function (evt) {
         activeField = x;
         console.log(`Active field ${x}`);
     });
@@ -85,7 +85,7 @@ function addTextField() {
     newTextField.style.fontSize = `${fontSizeController.value}px`;
     newTextField.id = `text-field-${currentFieldCount}`;
     newTextField.classList.add("text-field");
-    newTextField.addEventListener("click", function(evt) {
+    newTextField.addEventListener("click", function (evt) {
         activeField = parseInt(evt.target.id.match(/\d+/)[0]);
     });
     textFieldContainer.classList.add("text-field-container");
@@ -132,7 +132,7 @@ function activateMDField(x) {
 
     editor.getMarkdown();
 
-    editor.on("focus", function(evt) {
+    editor.on("focus", function (evt) {
         console.log(`Active field ${x}`);
         activeField = x;
     });
@@ -159,15 +159,114 @@ function addMDField() {
     currentFieldCount++;
 }
 
+function activateGraphField(x) {
+    activeField = x;
+
+    var board = JXG.JSXGraph.initBoard(`graph-field-${x}`, { boundingbox: [-5, 10, 7, -6], axis: true });
+
+    var fnInput = document.getElementById(`input_fn_${x}`);
+
+    var graph = board.create('functiongraph',
+        [function (x) { return eval(fnInput.value); }, -10, 10]
+    );
+
+    fnInput.addEventListener("change", (evt) => {
+        board.update();
+    });
+
+    document.getElementById(`btn_add_point_${x}`).addEventListener("click", (evt) => {
+        points.push(board.create('point', [(Math.random() - 0.5) * 10, (Math.random() - 0.5) * 3], { size: 4 }));
+    });
+
+    board.on()
+}
+
+function addGraphField() {
+    console.log('Adding new graph field');
+
+    var graphFieldContainer = document.createElement("div");
+
+    var graphContainer = document.createElement("div");
+    // Add Point button
+    var btnAddPoint = document.createElement("button");
+    btnAddPoint.id = `btn_add_point_${currentFieldCount}`;
+    btnAddPoint.innerText = "Add Point";
+    graphContainer.appendChild(btnAddPoint);
+    // Function String
+    var fnInput = document.createElement("input");
+    fnInput.id = `input_fn_${currentFieldCount}`;
+    fnInput.value = "0.5 * x * x - 2 * x";
+    graphContainer.appendChild(fnInput);
+
+    var newGraphField = document.createElement("div");
+    newGraphField.id = `graph-field-${currentFieldCount}`;
+    newGraphField.classList.add("graph-field");
+    newGraphField.classList.add("jxgbox");
+    graphFieldContainer.classList.add("graph-field-container");
+    graphFieldContainer.id = `graph-field-container-${currentFieldCount}`;
+
+    fields[currentFieldCount] = newGraphField;
+    graphContainer.appendChild(newGraphField);
+    graphFieldContainer.appendChild(graphContainer);
+    mainBoard.appendChild(graphFieldContainer);
+    activateGraphField(currentFieldCount);
+    fieldAdded(graphFieldContainer);
+
+    currentFieldCount++;
+}
+
+function addTableField() {
+    console.log('Adding new table field');
+
+    var tableFieldContainer = document.createElement("div");
+    var tableButtonContainer = document.createElement("div");
+    tableButtonContainer.classList.add("table-table-button-container");
+
+    var buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("table-button-container");
+    // Add Column button
+    var btnAddCol = document.createElement("button");
+    btnAddCol.id = `btn_add_col_${currentFieldCount}`;
+    btnAddCol.innerText = "Add Column";
+    btnAddCol.addEventListener("click", () => {
+        addColumn();
+    });
+    // Add Row button
+    var btnAddRow = document.createElement("button");
+    btnAddRow.id = `btn_add_row_${currentFieldCount}`;
+    btnAddRow.innerText = "Add Row";
+    btnAddRow.addEventListener("click", () => {
+        addRow();
+    });
+    
+    buttonContainer.appendChild(btnAddCol);
+    buttonContainer.appendChild(btnAddRow);
+    
+    var tableContainer = document.createElement("div");
+    tableContainer.classList.add("table-table-container");
+    var table = addTable();
+    console.log(table);
+    tableContainer.appendChild(table);
+
+    fields[currentFieldCount] = table;
+    tableButtonContainer.appendChild(buttonContainer);
+    tableButtonContainer.appendChild(tableContainer);
+    tableFieldContainer.appendChild(tableButtonContainer);
+    mainBoard.appendChild(tableFieldContainer);
+    fieldAdded(tableFieldContainer);
+
+    currentFieldCount++;
+}
+
 function removeActiveTextField(id = -1) {
     if (id == -1) {
         id = activeField;
     }
-    
+
     console.log(`Removing text field ${id}`);
-    
+
     fields.delete(id);
-    
+
     var item = document.getElementById(`text-field-${id}`);
     item.remove();
     var container = document.getElementById(`text-field-container-${id}`);
@@ -179,11 +278,11 @@ function removeActiveMathField(id = -1) {
     if (id == -1) {
         id = activeField;
     }
-    
+
     console.log(`Removing math field ${id}`);
-    
+
     fields.delete(id);
-    
+
     var item = document.getElementById(`math-field-${id}`);
     item.remove();
     var container = document.getElementById(`math-field-container-${id}`);
@@ -195,11 +294,11 @@ function removeActiveTextField(id = -1) {
     if (id == -1) {
         id = activeField;
     }
-    
+
     console.log(`Removing text field ${id}`);
 
     fields.delete(id);
-    
+
     var item = document.getElementById(`text-field-${id}`);
     item.remove();
     var container = document.getElementById(`text-field-container-${id}`);
@@ -215,7 +314,7 @@ function removeActiveMDField(id = -1) {
     console.log(`Removing md field ${id}`);
 
     fields.delete(id);
-    
+
     var item = document.getElementById(`md-field-${id}`);
     item.remove();
     var container = document.getElementById(`md-field-container-${id}`);
@@ -233,8 +332,8 @@ function showPaintField() {
         paintContainer.style.display = "flex";
         paintOn = true;
     }
-    
-    $(".draggable-element").arrangeable({dragSelector: '.drag-area'});
+
+    $(".draggable-element").arrangeable({ dragSelector: '.drag-area' });
 }
 
 function fieldAdded(container) {
@@ -243,7 +342,7 @@ function fieldAdded(container) {
     container.classList.add("draggable-element");
     container.appendChild(draggable);
     // container.insertBefore(draggable, container.firstChild);
-    $(".draggable-element").arrangeable({dragSelector: '.drag-area'});
+    $(".draggable-element").arrangeable({ dragSelector: '.drag-area' });
 }
 
 function fieldRemoved(container) {
@@ -256,12 +355,12 @@ function changeFont() {
         for (let mathField of mathFields) {
             mathField.style.fontSize = `${Math.max(3, fontSizeController.value)}px`;
         }
-    
+
         var textFields = document.getElementsByClassName("text-field");
         for (let textField of textFields) {
             textField.style.fontSize = `${Math.max(3, fontSizeController.value)}px`;
         }
-    
+
         var mdFields = document.getElementsByClassName("ProseMirror");
         for (let mdField of mdFields) {
             mdField.style.fontSize = `${Math.max(3, fontSizeController.value - 8)}px`;
@@ -273,7 +372,7 @@ function changeFont() {
 
 function initialize() {
     var latexControl = document.getElementById("show-latex");
-    latexControl.addEventListener("change", function(evt) {
+    latexControl.addEventListener("change", function (evt) {
         if (latexControl.checked) {
             document.getElementById("latex").style.display = 'block';
         } else {
@@ -281,16 +380,16 @@ function initialize() {
         }
     });
 
-    document.addEventListener("mousemove", function(evt) {
+    document.addEventListener("mousemove", function (evt) {
         mouseX = evt.clientX;
         mouseY = evt.clientY;
     });
 
-    var hour = 0, minute = 0, second = 0;
+    var hour = 0, minute = 0, second = 0, delta = 1;
     var elapsedTime = document.getElementById("elapsed-time");
     setInterval(() => {
         elapsedTime.innerText = `${hour}:${minute}:${second}`;
-        second++;
+        second += delta;
         if (second === 60) {
             minute++;
             second = 0;
@@ -300,6 +399,16 @@ function initialize() {
             minute = 0;
         }
     }, 1000);
+
+    elapsedTime.addEventListener("click", () => {
+        if (delta === 1) {
+            delta = 0;
+            elapsedTime.style.color = "darkgrey";
+        } else {
+            delta = 1;
+            elapsedTime.style.color = "white";
+        }
+    });
 }
 
 initialize();
