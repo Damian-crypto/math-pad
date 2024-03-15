@@ -19,7 +19,7 @@ function activateMathField(x) {
 
     var mathField = MQ.MathField(mathFieldSpan, {
         spaceBehavesLikeTab: true, // configurable
-        autoCommands: 'pi theta sqrt sum',
+        autoCommands: 'in ne pi to cup cap iff not and mid sum sqrt text theta equiv lambda forall exists implies subseteq therefore',
         autoOperatorNames: 'sin cos tan cosec sec cot csc',
         substituteTextarea: function () {
             return document.createElement('textarea');
@@ -39,6 +39,152 @@ function activateMathField(x) {
         activeField = x;
         console.log(`Active field ${x}`);
     });
+}
+
+function activateNumberLine(x) {
+    const margin = {
+        top: 20,
+        right: 40,
+        bottom: 20,
+        left: 15
+    },
+        width = 800 - margin.left - margin.right,
+        height = 50 - margin.top - margin.bottom;
+
+    const svg = d3
+        .select(`#number-line-field-${x}`)
+        .append("svg");
+
+    // console.log(svg);
+
+    svg
+        .attr("class", "number-line-svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+    const data = [];
+    for (let i = -4; i < 1; i++) {
+        data.push(i);
+    }
+    const xScale = d3.scaleLinear();
+    const dataMinX = d3.min(data, (d) => d);
+    const dataMaxX = d3.max(data, (d) => d);
+    xScale.domain([dataMinX, dataMaxX]).range([margin.left, width]);
+
+    const xAxis = d3.axisBottom(xScale).tickValues(data);
+    svg
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`)
+        .style("font-size", 16)
+        .call(xAxis);
+
+    function addCircle(x, y, dark, color = "#3469a5") {
+        svg
+            .append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("fill", dark ? "none" : color)
+            .attr("stroke", dark ? color : "none")
+            .attr("r", 5);
+    }
+
+    var start = 0;
+    var clicked = false;
+    var dragged = false;
+    var line = null;
+    svg
+        .on("mousedown", function (evt) {
+            console.log(evt);
+
+            evt.preventDefault();
+            start = evt.offsetX;
+            clicked = true;
+            dragged = false;
+
+            if (margin.left <= start && start <= width && evt.button === 0) {
+                addCircle(start, margin.top, evt.ctrlKey);
+            }
+
+            line = svg
+                .append("line")
+                .attr("x1", start)
+                .attr("y1", margin.top)
+                .attr("x2", start)
+                .attr("y2", margin.top)
+                .style("stroke", "#3469a5")
+                .style("stroke-width", 4);
+        });
+
+    svg
+        .on("mouseup", function (evt) {
+            if (dragged && evt.offsetX >= 20 && evt.offsetX <= 800 && evt.button === 0) {
+                addCircle(evt.offsetX, margin.top, evt.ctrlKey);
+            }
+            clicked = false;
+        });
+
+    svg
+        .on("mousemove", function (evt) {
+            evt.preventDefault();
+            if (clicked && evt.button === 0) {
+                line.attr("x2", evt.offsetX);
+            }
+            dragged = true;
+        });
+
+    svg
+        .on("dblclick", function (evt) {
+            addCircle(evt.offsetX, margin.top);
+        });
+
+    document.getElementById(`numberLineSaveButton${x}`).addEventListener('click', function () {
+        var svg = document.querySelector('svg');
+        var svgData = new XMLSerializer().serializeToString(svg);
+
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+
+        var img = new Image();
+        img.onload = function () {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            var dataURL = canvas.toDataURL("image/png");
+
+            // Create a temporary link element to download the image
+            var link = document.createElement('a');
+            link.download = 'svg_image.png';
+            link.href = dataURL;
+            link.click();
+        };
+        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    });
+}
+
+function addNumberLineField() {
+    console.log('Adding new number line field');
+
+    var numberLineFieldContainer = document.createElement("div");
+    var newNumberLineField = document.createElement("div");
+    newNumberLineField.id = `number-line-field-${currentFieldCount}`;
+    newNumberLineField.classList.add("number-line-field");
+    newNumberLineField.style.fontSize = `${fontSizeController.value}px`;
+    numberLineFieldContainer.classList.add("number-line-field-container");
+    numberLineFieldContainer.id = `number-line-field-container-${currentFieldCount}`;
+    numberLineFieldContainer.appendChild(newNumberLineField);
+
+    var saveBtn = document.createElement("button");
+    saveBtn.id = `numberLineSaveButton${currentFieldCount}`;
+    saveBtn.innerText = "Save Line";
+    newNumberLineField.appendChild(saveBtn);
+
+    fields[currentFieldCount] = newNumberLineField;
+
+    mainBoard.appendChild(numberLineFieldContainer);
+    activateNumberLine(currentFieldCount);
+    fieldAdded(numberLineFieldContainer);
+
+    currentFieldCount++;
 }
 
 function within(x1, x2, delta) {
@@ -238,10 +384,10 @@ function addTableField() {
     btnAddRow.addEventListener("click", () => {
         addRow();
     });
-    
+
     buttonContainer.appendChild(btnAddCol);
     buttonContainer.appendChild(btnAddRow);
-    
+
     var tableContainer = document.createElement("div");
     tableContainer.classList.add("table-table-container");
     var table = addTable();
